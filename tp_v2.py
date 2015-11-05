@@ -8,12 +8,7 @@ Created on Sat Oct 31 16:49:54 2015
 import math
 NBB = 8
 m=0
-#pour les listes à 3 dimensions suivantes :
-#i = numéro du pixel
-#j = taille minimisée du pixel
-#k = taille de la séquence dans laquelle on fait rentrer le pixel
-liste_decisions = []
-memoisation_couts = []
+dicoMemo = {}
 
 #fonction d'ouverture du fichier
 def open_file(file_name):
@@ -62,38 +57,32 @@ def cout_recursif(i, imageIni, b, n):
     if(i >= m +1):
         return 0
         
-    elif(memoisation_couts[i][b][n] == -1):
+    elif(not dicoMemo.has_key((i,b,n))):
         pixel = imageIni[i]
         nbbi = where_the_value_start(pixel)
         createNewSequence = 11 + nbbi + cout_recursif(i+1, imageIni, 1, nbbi)
         
         if(n > 255 or n <= 0):
-            liste_decisions[i][b][n] = "new"
-            memoisation_couts[i][b][n] = createNewSequence
+            dicoMemo[i,b,n] = createNewSequence
         else:
             putDirectInSequence = b + cout_recursif(i+1, imageIni, n+1, b)
             
             if(nbbi < b):
                 if(putDirectInSequence < createNewSequence):
-                    liste_decisions[i][b][n] = "insert"
-                    memoisation_couts[i][b][n] = putDirectInSequence
+                    dicoMemo[i,b,n] = putDirectInSequence
                 else:
-                    liste_decisions[i][b][n] = "new"
-                    memoisation_couts[i][b][n] = createNewSequence
+                    dicoMemo[i,b,n] = createNewSequence
             elif(nbbi == b):
-                liste_decisions[i][b][n] = "insert"                    
-                memoisation_couts[i][b][n] = putDirectInSequence
+                dicoMemo[i,b,n] = putDirectInSequence
             else:
                 modifSequence = n*(nbbi - b) + nbbi + cout_recursif(i+1, imageIni, n+1, nbbi)
 
                 if(modifSequence <= createNewSequence):
-                    liste_decisions[i][b][n] = "refactor"                    
-                    memoisation_couts[i][b][n] = modifSequence
+                    dicoMemo[i,b,n] = modifSequence
                 else:
-                    liste_decisions[i][b][n] = "new"
-                    memoisation_couts[i][b][n] = createNewSequence
+                    dicoMemo[i,b,n] = createNewSequence
                 
-        return memoisation_couts[i][b][n]
+    return dicoMemo[i,b,n]
         
 
 #----------------------------------------------------------------------------------------
@@ -178,23 +167,6 @@ def create_compressed_image(liste_decisions, imageIni):
       
         
 imageIni = open_file("image")
-m = len(imageIni)
-#i = numéro du pixel
-#j = taille minimisée du pixel
-#k = taille de la séquence dans laquelle on fait rentrer le pixel
-for i in range(m):
-  liste_decisions+=[[]]            
-  for j in range(8):
-      liste_decisions[i]+=[[]]
-      for k in range(255):
-          liste_decisions[i][j]+=["nothing"]
-          
-for i in range(m):
-  memoisation_couts+=[[]]            
-  for j in range(8):
-      memoisation_couts[i]+=[[]]
-      for k in range(255):
-          memoisation_couts[i][j]+=[-1] 
-                
+m = len(imageIni)               
 cout_recurrence = cout_recursif(0,imageIni,8,0)
 imageFinal = create_compressed_image(liste_decisions)
