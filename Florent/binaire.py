@@ -1,4 +1,5 @@
 import struct
+import math
 
 class GestionBinaire:
 
@@ -23,6 +24,9 @@ class GestionBinaire:
         
     def getPixels(self):
         return self.tab
+    
+    def getTaille(self):
+        return int(math.sqrt(len(self.tab)))
 
     #return 16 bits header (just cut the 5th last bits for a 11 bit header)
     # TO CHECK that function works
@@ -46,7 +50,6 @@ class GestionBinaire:
         header = header + b
         header = header << 5
         return header
-    
     
 gb = GestionBinaire()
 gb.readFile('images/images/Baboon.raw')
