@@ -35,10 +35,7 @@ class Compression:
             self.memCout[i] = -1
             self.memIteration[i] = -1
         
-    def nbBits(self, indexPixel):
-        pixel = self.tab[indexPixel]
-        
-        return len(bin(struct.unpack('<B', tab[indexPixel])[0])) - 2
+    
     
     def cout(self, i, n, nbBitsSequence):
                
