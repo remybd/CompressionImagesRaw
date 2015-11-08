@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct 31 16:49:54 2015
-
-@author: rémy
 """
 
 import math
