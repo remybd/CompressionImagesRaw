@@ -32,7 +32,7 @@ class Compression:
     
     def c(self):
 #        self.__cout(0,0,0)
-        print(self.__cout_iteratif())
+        print(self.__cout_iteratif()/8)
 
     def __cout(self, i, n, b):
         self.compteur = self.compteur + 1
@@ -76,48 +76,59 @@ class Compression:
                 
     def __cout_iteratif(self):
         
+        self.memCout[self.m**2] = 0
+#        self.memCout[self.m**2] = 0
+        
         a = []
         for i in range(0, (self.m**2)):
             a.append(self.binaire.nbBits(self.tab[i]))
-                
+            
         b = 0
         n = 0
         
         for i in range((self.m**2)-1,-1, -1):
             coutPrec = self.memCout[i+1]
             
-            if n == 0 or n >= 255 :
+            if n == 0 or n >= 255 :                
+                print('n == 0 or n >= 255')
                 self.memCout[i] = coutPrec + 11 + a[i]
                 b = a[i]
                 n = 1
-            
+                
             # Si le pixel est parfait pour la sequence :
-            elif a[i] == b :
+            elif a[i] == b :                
+                print('a[i] == b')
                 self.memCout[i] = coutPrec + a[i]
                 b = a[i]
                 n = n + 1
             
             # Si le pixel est plus petit : 
-            elif a[i] < b :
+            elif a[i] < b :                
+                print('a[i] < b')
                 garde = coutPrec + b
                 ferme = coutPrec + a[i] + 11
-                self.memCout[i] = min(garde,ferme)
-                if self.memCout[i] == garde :
+                
+                if garde <= ferme :
+                    self.memCout[i] = garde
                     b = b
                     n = n + 1
-                else:
+                else :
+                    self.memCout[i] = ferme
                     b = a[i]
-                    n = 1
+                    n = 1                    
                 
             # Si le pixel est plus grand :
             elif a[i] > b :
+                print('a[i] > b')
                 garde = coutPrec + a[i] + n*(a[i]-b)
                 ferme = coutPrec + a[i] + 11
-                self.memCout[i] = min(garde,ferme) 
-                if self.memCout[i] == garde :
+                
+                if garde >= ferme :
+                    self.memCout[i] = garde 
                     b = a[i]
                     n = n + 1
                 else:
+                    self.memCout[i] = ferme
                     b = a[i]
                     n = 1
                     
@@ -125,6 +136,5 @@ class Compression:
                 
                 
         
-compression = Compression('images/images/Barbara.raw')
+compression = Compression('images/images/Lena.raw')
 compression.c()
-print(compression.memCout[0])
