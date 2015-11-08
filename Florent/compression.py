@@ -5,7 +5,7 @@ from binaire import GestionBinaire
 class Compression:
     
     def __init__(self, fichier):
-        sys.setrecursionlimit(1500)
+        sys.setrecursionlimit(255000)
         # helper binaire
         self.binaire = GestionBinaire()
         self.binaire.readFile(fichier)
@@ -24,9 +24,9 @@ class Compression:
         self.initMem()
         
     def initMem(self):
-        for i in range(0,(self.m**2)):
+        for i in range(0,(self.m**2)+1):
             self.memCout.append(-1)
-            self.memIteration.append(-1)
+            self.memIteration.append({})
     
     def c(self):
         self.__cout(0,0,0)
@@ -34,11 +34,8 @@ class Compression:
     def __cout(self, i, n, b):
                
         # On a deja parcouru cette arbre
-        if self.memIteration[i] != -1 and self.memIteration[i].hasKey((n,nbBitSequence)) :
-            return self.memIteration[i].get((n,b))
-
-        if self.memIteration[i] == -1 :
-            self.memIteration[i] = []
+        if (n,b) in self.memIteration[i] :
+            return self.memIteration[i][n,b]
         
         # Condition d'arret
         if (self.m**2) == i :
@@ -70,6 +67,8 @@ class Compression:
 
         if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
             self.memCout[i] = self.memIteration[i][n,b]
+            
+        return self.memIteration[i][n,b]
                   
 #     def cout(self, i, n, b):
 #
