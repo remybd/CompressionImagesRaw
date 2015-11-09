@@ -5,7 +5,7 @@ from binaire import GestionBinaire
 class Compression:
     
     def __init__(self, fichier):        
-        sys.setrecursionlimit(260000)
+#        sys.setrecursionlimit(260000)
         
         # helper binaire
         self.binaire = GestionBinaire()
@@ -23,7 +23,6 @@ class Compression:
         
         #Initialisation des tableaux de memoisation
         self.initMem()
-        self.compteur = 0
         
     def initMem(self):
         for i in range(0,(self.m**2)+1):
@@ -33,107 +32,140 @@ class Compression:
     def c(self):
 #        self.__cout(0,0,0)
         print(self.__cout_iteratif()/8)
-
-    def __cout(self, i, n, b):
-        self.compteur = self.compteur + 1
-        print(self.compteur)
-        # On a deja parcouru cette arbre
-        if (n,b) in self.memIteration[i] :
-            return self.memIteration[i][n,b]
-        
-        # Condition d'arret
-        if (self.m**2) == i :
-            self.memIteration[i][n,b] = 0
-        else :
-            aj = self.binaire.nbBits(self.tab[i])
-
-            # Si la sequence est rempli ou qu’il n’y en a pas :
-            if n == 0 or n >= 255 :
-                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
-
-            # Si le pixel est parfait pour la sequence :
-            elif b == aj:
-                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
-
-            # Si le pixel est plus petit : 
-            elif b > aj:
-
-                garde = self.__cout(i+1, n+1, b) + b
-                ferme = self.__cout(i+1, 1, aj) + aj + 11
-                self.memIteration[i][n,b] = min(garde, ferme)
-
-            # Si le pixel est plus grand :
-            else :
-
-                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
-                ferme = self.__cout(i+1, 1, aj) + aj + 11
-                self.memIteration[i][n,b] = min(garde, ferme)
-
-        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
-            self.memCout[i] = self.memIteration[i][n,b]
-            
-        return self.memIteration[i][n,b]
                 
     def __cout_iteratif(self):
         
+        #Initialize last index
         self.memCout[self.m**2] = 0
-#        self.memCout[self.m**2] = 0
-        
-        a = []
-        for i in range(0, (self.m**2)):
-            a.append(self.binaire.nbBits(self.tab[i]))
-            
-        b = 0
-        n = 0
-        
+        self.memIteration[self.m**2][0,0] = 0
+
+        # Iterate on pixels
         for i in range((self.m**2)-1,-1, -1):
-            coutPrec = self.memCout[i+1]
             
-            if n == 0 or n >= 255 :                
-                print('n == 0 or n >= 255')
-                self.memCout[i] = coutPrec + 11 + a[i]
-                b = a[i]
-                n = 1
-                
-            # Si le pixel est parfait pour la sequence :
-            elif a[i] == b :                
-                print('a[i] == b')
-                self.memCout[i] = coutPrec + a[i]
-                b = a[i]
-                n = n + 1
+            precedents = self.memIteration[i+1]
+            a = self.binaire.nbBits(self.tab[i])
             
-            # Si le pixel est plus petit : 
-            elif a[i] < b :                
-                print('a[i] < b')
-                garde = coutPrec + b
-                ferme = coutPrec + a[i] + 11
+            #iterate on many combinaisons on each index
+            for keys, coutPrec in precedents.items() :
+                n = keys[0]
+                b = keys[1]
                 
-                if garde <= ferme :
-                    self.memCout[i] = garde
-                    b = b
-                    n = n + 1
-                else :
-                    self.memCout[i] = ferme
-                    b = a[i]
-                    n = 1                    
-                
-            # Si le pixel est plus grand :
-            elif a[i] > b :
-                print('a[i] > b')
-                garde = coutPrec + a[i] + n*(a[i]-b)
-                ferme = coutPrec + a[i] + 11
-                
-                if garde >= ferme :
-                    self.memCout[i] = garde 
-                    b = a[i]
-                    n = n + 1
-                else:
-                    self.memCout[i] = ferme
-                    b = a[i]
-                    n = 1
+                # full sequence or no opened sequence
+                if n >= 255 or n == 0 :                
+                    newCout = coutPrec + 11 + a
+                    newB = a
+                    newN = 1
                     
+                    if (newN,newB) in self.memIteration[i] :
+                        self.memIteration[i][newN,newB] = min(self.memIteration[i][newN,newB],newCout)
+                    else :
+                        self.memIteration[i][newN,newB] = newCout 
+
+                    
+                # Si le pixel est parfait pour la sequence :
+                elif a == b :                
+                    newCout = coutPrec + a
+                    newB = a
+                    newN = n + 1
+                    
+                    if (newN,newB) in self.memIteration[i] :
+                        self.memIteration[i][newN,newB] = min(self.memIteration[i][newN,newB],newCout)
+                    else :
+                        self.memIteration[i][newN,newB] = newCout 
+
+ 
+                else:
+                        
+                    # Si le pixel est plus petit :
+                    if a < b :                
+                        garde = coutPrec + b
+                        ferme = coutPrec + a + 11
+
+                        newCoutGarde = garde
+                        newBGarde = b
+                        newNGarde = n + 1
+                        newCoutFerme = ferme
+                        newBFerme = a
+                        newNFerme = 1 
+
+                        if (newNGarde,newBGarde) in self.memIteration[i] :
+                            self.memIteration[i][newNGarde,newBGarde] = min(self.memIteration[i][newNGarde,newBGarde],newCoutGarde)
+                        else :
+                            self.memIteration[i][newNGarde,newBGarde] = newCoutGarde 
+
+                        if (newNFerme,newBFerme) in self.memIteration[i] :
+                            self.memIteration[i][newNFerme,newBFerme] = min(self.memIteration[i][newNFerme,newBFerme],newCoutFerme)
+                        else :
+                            self.memIteration[i][newNFerme,newBFerme] = newCoutFerme 
+                    
+                    
+
+
+                    # Si le pixel est plus grand :
+                    elif a > b :
+                        garde = coutPrec + a + n*(a-b)
+                        ferme = coutPrec + a + 11
+
+                        newCoutGarde = garde 
+                        newBGarde = a
+                        newNGarde = n + 1
+                        newCoutFerme = ferme
+                        newBFerme = a
+                        newNFerme = 1
+
+                        if (newNGarde,newBGarde) in self.memIteration[i] :
+                            self.memIteration[i][newNGarde,newBGarde] = min(self.memIteration[i][newNGarde,newBGarde],newCoutGarde)
+                        else :
+                            self.memIteration[i][newNGarde,newBGarde] = newCoutGarde 
+
+                        if (newNFerme,newBFerme) in self.memIteration[i] :
+                            self.memIteration[i][newNFerme,newBFerme] = min(self.memIteration[i][newNFerme,newBFerme],newCoutFerme)
+                        else :
+                            self.memIteration[i][newNFerme,newBFerme] = newCoutFerme 
+
+            self.memCout[i] = min(value for value in self.memIteration[i].values())
+
         return self.memCout[0]
-                
+    
+
+#    def __cout(self, i, n, b):
+#        self.compteur = self.compteur + 1
+#        print(self.compteur)
+#        # On a deja parcouru cette arbre
+#        if (n,b) in self.memIteration[i] :
+#            return self.memIteration[i][n,b]
+#        
+#        # Condition d'arret
+#        if (self.m**2) == i :
+#            self.memIteration[i][n,b] = 0
+#        else :
+#            aj = self.binaire.nbBits(self.tab[i])
+#
+#            if n == 0 or n >= 255 :
+#                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
+#
+#            # Si le pixel est parfait pour la sequence :
+#            elif b == aj:
+#                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
+#
+#            # Si le pixel est plus petit : 
+#            elif b > aj:
+#
+#                garde = self.__cout(i+1, n+1, b) + b
+#                ferme = self.__cout(i+1, 1, aj) + aj + 11
+#                self.memIteration[i][n,b] = min(garde, ferme)
+#
+#            # Si le pixel est plus grand :
+#            else :
+#
+#                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
+#                ferme = self.__cout(i+1, 1, aj) + aj + 11
+#                self.memIteration[i][n,b] = min(garde, ferme)
+#
+#        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
+#            self.memCout[i] = self.memIteration[i][n,b]
+#            
+#        return self.memIteration[i][n,b]
                 
         
 compression = Compression('images/images/Lena.raw')
