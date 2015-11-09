@@ -6,6 +6,7 @@ import java.util.ArrayList;
  */
 public class Binaire {
     private ArrayList<Byte> tab;
+    private ArrayList<Byte> tabLinearise;
 
     public Binaire(String fileName){
         super();
@@ -23,6 +24,8 @@ public class Binaire {
             }
 
             r.close();
+            
+            this.linearise();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -30,7 +33,28 @@ public class Binaire {
             e.printStackTrace();
         }
     }
-
+    
+    public void linearise(){
+    	ArrayList<Byte> tabLin = new ArrayList<>();
+        int taille = this.getTaille();
+        int i = 0;
+        
+        while (i < taille){
+        	for (int j=0;j<taille; j++){
+                tabLin.add(tab.get(j+(i*taille)));
+	            i = i+1;
+	            
+	            if (i < taille) {
+	            	for (j=0;j<taille; j++)
+	                    tabLin.add(tab.get(((i+1)*taille-1)-j));
+	                i = i+1;	
+	            }                
+        	}
+        }
+            
+        this.tabLinearise=tabLin;
+    }
+                		
     public int nbBits(Byte pixel){
         Double v = pixel.doubleValue()+128;
 
@@ -44,7 +68,7 @@ public class Binaire {
     }
 
     public ArrayList<Byte> getPixels(){
-        return tab;
+        return tabLinearise;
     }
 
     public int getTaille(){

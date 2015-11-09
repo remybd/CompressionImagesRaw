@@ -33,7 +33,6 @@ public class Compression {
         for(int i =0; i <= m; i++){
             memCout.add(Integer.MAX_VALUE);
             memIteration.add(new HashMap<HeaderSequence,Integer>());
-            memoisation.add(null);
         }
     }
 
@@ -201,39 +200,6 @@ public class Compression {
         return m;
     }
 
-
-
-
-    public int c_recursif_v2(){ return coutV2(m-1);}
-    private ArrayList<Integer> memoisation = new ArrayList<Integer>();
-
-    public int coutV2(int i){
-
-        if(memoisation.get(i) != null){
-            return memoisation.get(i);
-        }
-        //condition d'arret
-        if(i < 0) {
-            memoisation.set(i,0);
-        }
-        else{
-            int aj = binaire.nbBits(tab.get(i));
-
-
-            int val = 0;
-            int min = Integer.MAX_VALUE;
-            for(int j = 1; j <= i ; j++){
-                for(int n = 0; n < 256; n++){
-                    val = coutV2(i-j) + n*Math.max(aj,binaire.nbBits(tab.get(i-j+1))) ;
-                    if(val < min)
-                        min = val;
-                }
-            }
-            memoisation.set(i,min + 11);
-        }
-
-        return memoisation.get(i);
-    }
 
     /*
         public int cout(int i, int n, int b){
