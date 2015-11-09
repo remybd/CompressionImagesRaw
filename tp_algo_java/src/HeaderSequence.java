@@ -23,6 +23,14 @@ public class HeaderSequence {
 
     @Override
     public boolean equals(Object obj) {
-        return this.n == (((HeaderSequence)(obj)).getN()) && this.b == (((HeaderSequence)(obj)).getB());
+        HeaderSequence h = (HeaderSequence)obj;
+        return (this.n == h.getN()) && (this.b == h.getB());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = n;
+        result = 255 * result + b;
+        return result;
     }
 }

@@ -13,6 +13,8 @@ public class Compression {
     private ArrayList<HashMap<HeaderSequence,Integer>> memIteration;
     private ArrayList<Integer> memCout;
 
+    int cpt = 0;
+
     public  Compression(String fichier){
         this.binaire = new Binaire(fichier);
 
@@ -23,7 +25,7 @@ public class Compression {
 
         for(int i =0; i <= m; i++){
             memCout.add(Integer.MAX_VALUE);
-            memIteration.add(null);
+            memIteration.add(new HashMap<HeaderSequence,Integer>());
         }
     }
 
@@ -36,11 +38,71 @@ public class Compression {
         HeaderSequence h = new HeaderSequence(n,b);
 
         //on a deja parcouru cet arbre
+        if(memIteration.get(i).containsKey(h)){
+            //System.out.println(memIteration.get(i));
+            return memIteration.get(i).get(h);
+        }
+
+        cpt++;
+        if(cpt >= m * 8 * 255)
+            System.out.println("STOPPPPPPPPPPPPPPPP cpt");
+
+        //condition d'arret
+        if(m <= i) {
+            memIteration.get(i).put(h, 0);
+            //System.out.println("fin " + b  + "   " + n);
+        }
+        else{
+            int aj = binaire.nbBits(tab.get(i));
+
+            //si la séquence est remplie ou qu'il n'y en a pas :
+            if(n == 0 || n >= 255){
+                memIteration.get(i).put(h, new Integer(cout(i + 1, 1, aj) + 11 + aj));
+            }
+            //si le pixel est parfait pour la séquence :
+            else if(b == aj){
+                memIteration.get(i).put(h, new Integer(cout(i + 1, n + 1, aj) + aj));
+            }
+            //si le pixel est plus petit :
+            else if(b > aj){
+                int garde = cout(i+1, n+1, b) + b;
+                int ferme = cout(i+1, 1, aj) + 11 + aj;
+                memIteration.get(i).put(h, new Integer(Math.min(garde, ferme)));
+            }
+            //si le pixel est plus grand :
+            else{
+                int garde = cout(i+1, n+1, aj) + aj + (n-1)*(aj-b);
+                int ferme = cout(i+1, 1, aj) + 11 + aj;
+                memIteration.get(i).put(h, new Integer(Math.min(garde, ferme)));
+            }
+        }
+
+        return memIteration.get(i).get(h);
+    }
+
+
+    public int getM(){
+        return m;
+    }
+
+
+    /*
+        public int cout(int i, int n, int b){
+        HeaderSequence h = new HeaderSequence(n,b);
+
+        //on a deja parcouru cet arbre
         if(memIteration.get(i) != null && memIteration.get(i).containsKey(h)){
             return memIteration.get(i).get(h);
         }
 
-        HashMap<HeaderSequence,Integer> value = new HashMap<HeaderSequence,Integer>();
+        HashMap<HeaderSequence,Integer> value;
+        if(memIteration.get(i) != null)
+            value = memIteration.get(i);
+        else{
+            value = new HashMap<HeaderSequence,Integer>();
+            memIteration.set(i, value);
+        }
+
         //condition d'arret
         if(m <= i) {
             value.put(h, new Integer(0));
@@ -69,20 +131,5 @@ public class Compression {
                 value.put(h, new Integer(Math.min(garde,ferme)));
             }
         }
-
-        if(memCout.get(i) == Integer.MAX_VALUE ){
-            memCout.set(i, value.get(h));
-        } else if(memCout.get(i).intValue() > value.get(h).intValue()){
-            memCout.set(i, value.get(h));
-        }
-
-        memIteration.set(i, value);
-        return memIteration.get(i).get(h);
-    }
-
-
-    public int getM(){
-        return m;
-    }
-    
+         */
 }
