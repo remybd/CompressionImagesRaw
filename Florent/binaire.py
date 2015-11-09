@@ -7,13 +7,34 @@ class GestionBinaire:
         self.tab = []
     
     def readFile(self, fileName):
-        self.tab = []
+        tab = []
+        
         with open(fileName,'rb') as image:
             octet = image.read(1)
             while octet :
-                self.tab.append(octet)
+                tab.append(octet)
                 octet = image.read(1)
+        
+        self.tab = self.linearise(tab)        
+        
+    def linearise(self, tab):
+        
+        tabLin = []
 
+        m = int(math.sqrt(len(tab)))
+        i = 0
+        while i < m :
+            for j in range(0, m):
+                tabLin.append(tab[j+(i*m)])
+            i = i+1
+            
+            if i < m :
+                for j in range(0, m):
+                    tabLin.append(tab[((i+1)*m-1)-j])
+                i = i+1
+
+        return tabLin
+                
     def nbBits(self, pixel):                
         return len(bin(struct.unpack('<B', pixel)[0])) - 2
     
