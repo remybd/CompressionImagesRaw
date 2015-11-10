@@ -52,11 +52,10 @@ public class Binaire {
         this.tabLinearise=tabLin;
     }
                 		
-    public int nbBits(Byte pixel){
+    public static int nbBits(Byte pixel){
         Double v = pixel.doubleValue()+128;
-
         Double value = Math.floor(Math.log(v) / Math.log(2));
-        return value.intValue();
+        return value.intValue()+1;
     }
 
     public ArrayList<Byte> getPixels(){
