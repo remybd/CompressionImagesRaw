@@ -24,8 +24,8 @@ public class Binaire {
             }
 
             r.close();
-            
-            this.linearise();
+            this.tabLinearise=tab;
+            //this.linearise();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -60,11 +60,6 @@ public class Binaire {
 
         Double value = Math.floor(Math.log(v) / Math.log(2));
         return value.intValue();
-    }
-
-    public Byte addNumberToBinary(Byte octect, int number){
-        Integer value =  (octect.intValue() + number);
-        return value.byteValue();
     }
 
     public ArrayList<Byte> getPixels(){
