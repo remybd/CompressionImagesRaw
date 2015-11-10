@@ -1,3 +1,6 @@
-tp_v2.py
-tp_algo_java/tp_algo_java.ipr
+*.class
+*.iml
+*.ipr
 *.iws
+*.project
+*.classpath

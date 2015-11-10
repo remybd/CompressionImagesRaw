@@ -1,38 +1,38 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.Header;
-
-/**
- * Created by rémy on 08/11/2015.
- */
-
-
 public class Compression {
     private int m;
     private ArrayList<Byte> tab;
     private Binaire binaire;
     private ArrayList<HashMap<HeaderSequence,Integer>> memIteration;
     private ArrayList<Integer> memCout;
+    private ArrayList<Integer> memSignificatif;
 
     int cpt = 0;
 
-    public  Compression(String fichier){
+    public Compression(String fichier){
         this.binaire = new Binaire(fichier);
 
         this.m = binaire.getTaille();
         this.tab = binaire.getPixels();
         this.memIteration = new ArrayList<HashMap<HeaderSequence,Integer>>();
         this.memCout = new ArrayList<Integer>();
+        this.memSignificatif = new ArrayList<Integer>();
         this.initMemorisation();
     }
 
     private void initMemorisation(){
     	memCout.clear();
     	memIteration.clear();
-        for(int i =0; i <= m; i++){
+        memSignificatif.clear();
+
+        memCout.add(Integer.MAX_VALUE);
+        memIteration.add(new HashMap<HeaderSequence,Integer>());
+        for(int i =0; i < m; i++){
             memCout.add(Integer.MAX_VALUE);
             memIteration.add(new HashMap<HeaderSequence,Integer>());
+            memSignificatif.add(binaire.nbBits(tab.get(i)));
         }
     }
 
@@ -56,7 +56,7 @@ public class Compression {
             //System.out.println("fin " + b  + "   " + n);
         }
         else{
-            int aj = binaire.nbBits(tab.get(i));
+            int aj = memSignificatif.get(i);
 
             //si la séquence est remplie ou qu'il n'y en a pas :
             if(n == 0 || n >= 255){
@@ -95,7 +95,7 @@ public class Compression {
     	
     	for(int i=this.m-1; i>-1; i--){
     		HashMap<HeaderSequence,Integer> precedents = this.memIteration.get(i+1);
-    		int a = this.binaire.nbBits(this.tab.get(i));
+    		int a = memSignificatif.get(i);
     		
     		for (HeaderSequence k : precedents.keySet()){
     			int n = k.getN();
@@ -200,8 +200,7 @@ public class Compression {
         return m;
     }
 
-
-    /*
+        /*
         public int cout(int i, int n, int b){
         HeaderSequence h = new HeaderSequence(n,b);
 

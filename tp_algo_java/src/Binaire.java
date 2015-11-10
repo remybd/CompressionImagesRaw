@@ -1,9 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
 
-/**
- * Created by rémy on 08/11/2015.
- */
 public class Binaire {
     private ArrayList<Byte> tab;
     private ArrayList<Byte> tabLinearise;
