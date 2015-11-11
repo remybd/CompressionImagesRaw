@@ -52,26 +52,20 @@ class Compression:
                 
                 # full sequence or no opened sequence
                 if n >= 255 or n == 0 :                
-                    newCout = coutPrec + 11 + a
-                    newB = a
-                    newN = 1
                     
-                    if (newN,newB) in self.memIteration[i] :
-                        self.memIteration[i][newN,newB] = min(self.memIteration[i][newN,newB],newCout)
+                    if (1,a) in self.memIteration[i] :
+                        self.memIteration[i][1,a] = min(self.memIteration[i][1,a],coutPrec + 11 + a)
                     else :
-                        self.memIteration[i][newN,newB] = newCout 
+                        self.memIteration[i][1,a] = coutPrec + 11 + a 
 
                     
                 # Si le pixel est parfait pour la sequence :
-                elif a == b :                
-                    newCout = coutPrec + a
-                    newB = a
-                    newN = n + 1
+                elif a == b :
                     
-                    if (newN,newB) in self.memIteration[i] :
-                        self.memIteration[i][newN,newB] = min(self.memIteration[i][newN,newB],newCout)
+                    if (n+1,a) in self.memIteration[i] :
+                        self.memIteration[i][n+1,a] = min(self.memIteration[i][n+1,a],coutPrec + a)
                     else :
-                        self.memIteration[i][newN,newB] = newCout 
+                        self.memIteration[i][n+1,a] = coutPrec + a
 
  
                 else:
@@ -81,47 +75,30 @@ class Compression:
                         garde = coutPrec + b
                         ferme = coutPrec + a + 11
 
-                        newCoutGarde = garde
-                        newBGarde = b
-                        newNGarde = n + 1
-                        newCoutFerme = ferme
-                        newBFerme = a
-                        newNFerme = 1 
-
-                        if (newNGarde,newBGarde) in self.memIteration[i] :
-                            self.memIteration[i][newNGarde,newBGarde] = min(self.memIteration[i][newNGarde,newBGarde],newCoutGarde)
+                        if (n+1,b) in self.memIteration[i] :
+                            self.memIteration[i][n+1,b] = min(self.memIteration[i][n+1,b],garde)
                         else :
-                            self.memIteration[i][newNGarde,newBGarde] = newCoutGarde 
+                            self.memIteration[i][n+1,b] = garde 
 
-                        if (newNFerme,newBFerme) in self.memIteration[i] :
-                            self.memIteration[i][newNFerme,newBFerme] = min(self.memIteration[i][newNFerme,newBFerme],newCoutFerme)
+                        if (1,a) in self.memIteration[i] :
+                            self.memIteration[i][1,a] = min(self.memIteration[i][1,a],ferme)
                         else :
-                            self.memIteration[i][newNFerme,newBFerme] = newCoutFerme 
+                            self.memIteration[i][1,a] = ferme 
                     
-                    
-
-
                     # Si le pixel est plus grand :
                     elif a > b :
                         garde = coutPrec + a + n*(a-b)
                         ferme = coutPrec + a + 11
 
-                        newCoutGarde = garde 
-                        newBGarde = a
-                        newNGarde = n + 1
-                        newCoutFerme = ferme
-                        newBFerme = a
-                        newNFerme = 1
-
-                        if (newNGarde,newBGarde) in self.memIteration[i] :
-                            self.memIteration[i][newNGarde,newBGarde] = min(self.memIteration[i][newNGarde,newBGarde],newCoutGarde)
+                        if (n+1,a) in self.memIteration[i] :
+                            self.memIteration[i][n+1,a] = min(self.memIteration[i][n+1,a],garde)
                         else :
-                            self.memIteration[i][newNGarde,newBGarde] = newCoutGarde 
+                            self.memIteration[i][n+1,a] = garde 
 
-                        if (newNFerme,newBFerme) in self.memIteration[i] :
-                            self.memIteration[i][newNFerme,newBFerme] = min(self.memIteration[i][newNFerme,newBFerme],newCoutFerme)
+                        if (1,a) in self.memIteration[i] :
+                            self.memIteration[i][1,a] = min(self.memIteration[i][1,a],ferme)
                         else :
-                            self.memIteration[i][newNFerme,newBFerme] = newCoutFerme 
+                            self.memIteration[i][1,a] = ferme 
 
             self.memCout[i] = min(value for value in self.memIteration[i].values())
 
