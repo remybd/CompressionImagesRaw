@@ -122,6 +122,9 @@ class Compression:
             for keys, coutPrec in self.memIteration[i].items():
                 n = keys[0]
                 b = keys[1]
+                
+                if i == 5619 and n == 5 and b==8 :
+                    print self.memIteration[i]
                 # si on doit ouvrir une nouvelle sequence
                 if nPrec == 1:
                     if (self.memCout[i-1] != coutPrec + 11 + bPrec):
@@ -137,6 +140,7 @@ class Compression:
                     del self.memIteration[i][keys]
                 else:
                     nPrec = keys[0]
+                    bPrec = keys[1]
         
             print i, " " ,self.memIteration[i]
         
