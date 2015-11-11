@@ -22,7 +22,7 @@ public class Binaire {
 
             r.close();
             this.tabLinearise=tab;
-            //this.linearise();
+//            this.linearise();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -33,7 +33,7 @@ public class Binaire {
     
     public void linearise(){
     	ArrayList<Byte> tabLin = new ArrayList<>();
-        int taille = this.getTaille();
+        int taille = (int)Math.sqrt(this.getTaille());
         int i = 0;
         
         while (i < taille){
