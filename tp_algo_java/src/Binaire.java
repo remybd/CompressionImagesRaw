@@ -73,4 +73,22 @@ public class Binaire {
 
         return header;
     }
+
+    public ArrayList<Byte> createFinalArray (String s){
+        int nbByte = s.length() / 8;
+        int lastByteToComplete = s.length() % 8;
+        ArrayList<Byte> result = new ArrayList<Byte>();
+
+        int start = 0;
+        int fin = 0;
+        String octet;
+        for(int i =0; i < nbByte; i++){
+            start = i*8;
+            fin = (i+1)*8;
+            octet = s.substring(start,fin);
+            result.add(new Byte(Byte.parseByte(octet,2)));
+        }
+
+        return result;
+    }
 }
