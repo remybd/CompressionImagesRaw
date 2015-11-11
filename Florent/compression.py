@@ -30,27 +30,31 @@ class Compression:
             self.memIteration.append({})
     
     def c(self):
-#        self.__cout(0,0,0)
-        print(self.__cout_iteratif()/8)
-                
+        print("Algorithme iteratif :")
+        cout = self.__cout_iteratif()
+        print "fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits"
+        print "fichier apres compression : ",cout/8, " octets soit ", cout, " bits"
+        print "Compression de ", (1-(cout/((self.m**2)*8)))*100, " %" 
+        self.solution()
+    
     def __cout_iteratif(self):
         
-        #Initialize last index
+        #Initialisation de la derniere case du tableau (juste apres le dernier pixel)
         self.memCout[self.m**2] = 0
         self.memIteration[self.m**2][0,0] = 0
 
-        # Iterate on pixels
+        # Iteration sur les pixels
         for i in range((self.m**2)-1,-1, -1):
             
             precedents = self.memIteration[i+1]
             a = self.binaire.nbBits(self.tab[i])
             
-            #iterate on many combinaisons on each index
+            # Iteration sur les combinaison (i,n,b) de la case precedemment calculee
             for keys, coutPrec in precedents.items() :
                 n = keys[0]
                 b = keys[1]
                 
-                # full sequence or no opened sequence
+                # sequence rempli ou aucune sequence
                 if n >= 255 or n == 0 :                
                     
                     if (1,a) in self.memIteration[i] :
@@ -66,7 +70,6 @@ class Compression:
                         self.memIteration[i][n+1,a] = min(self.memIteration[i][n+1,a],coutPrec + a)
                     else :
                         self.memIteration[i][n+1,a] = coutPrec + a
-
  
                 else:
                         
@@ -104,46 +107,38 @@ class Compression:
 
         return self.memCout[0]
     
-
-#    def __cout(self, i, n, b):
-#        self.compteur = self.compteur + 1
-#        print(self.compteur)
-#        # On a deja parcouru cette arbre
-#        if (n,b) in self.memIteration[i] :
-#            return self.memIteration[i][n,b]
-#        
-#        # Condition d'arret
-#        if (self.m**2) == i :
-#            self.memIteration[i][n,b] = 0
-#        else :
-#            aj = self.binaire.nbBits(self.tab[i])
-#
-#            if n == 0 or n >= 255 :
-#                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
-#
-#            # Si le pixel est parfait pour la sequence :
-#            elif b == aj:
-#                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
-#
-#            # Si le pixel est plus petit : 
-#            elif b > aj:
-#
-#                garde = self.__cout(i+1, n+1, b) + b
-#                ferme = self.__cout(i+1, 1, aj) + aj + 11
-#                self.memIteration[i][n,b] = min(garde, ferme)
-#
-#            # Si le pixel est plus grand :
-#            else :
-#
-#                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
-#                ferme = self.__cout(i+1, 1, aj) + aj + 11
-#                self.memIteration[i][n,b] = min(garde, ferme)
-#
-#        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
-#            self.memCout[i] = self.memIteration[i][n,b]
-#            
-#        return self.memIteration[i][n,b]
-                
+    def solution(self):
+        nPrec = 0
+        bPrec = 0
+        # Initialise n et b de la premiere case
+        for keys, coutPrec in self.memIteration[0].items():
+            if self.memCout[0] == coutPrec :
+                nPrec = keys[0]
+                bPrec = keys[1]
+        
+        # Iteration sur le tableau des combinaisons
+        for i in range(1,(self.m**2)+1):
+            #Iteration sur les combinaisons
+            for keys, coutPrec in self.memIteration[i].items():
+                n = keys[0]
+                b = keys[1]
+                # si on doit ouvrir une nouvelle sequence
+                if nPrec == 1:
+                    if (self.memCout[i-1] != coutPrec + 11 + bPrec):
+                        del self.memIteration[i][keys]
+                # si le n ne correspond pas, on supprime les mauvaises valeurs
+                elif n != nPrec-1 or b != bPrec :
+                    del self.memIteration[i][keys]
+            
+            #Iteration sur les combinaisons qui correspondent au n de la meilleur solution
+            self.memCout[i] = min(value for value in self.memIteration[i].values())
+            for keys, coutPrec in self.memIteration[i].items():
+                if self.memCout[i] != coutPrec:
+                    del self.memIteration[i][keys]
+                else:
+                    nPrec = keys[0]
+        
+            print i, " " ,self.memIteration[i]
         
 compression = Compression('images/images/Lena.raw')
 compression.c()
