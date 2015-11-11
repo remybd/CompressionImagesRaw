@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Created by rémy on 10/11/2015.
+ */
 public class TryRebuild {
     private Binaire binaire;
     private int m;
@@ -31,7 +34,7 @@ public class TryRebuild {
 
         this.memBitsSignificatifs = new ArrayList<Integer>();
         for(int i =0; i < m; i++){
-            memBitsSignificatifs.add(Binaire.nbBits(tab[i]));
+            memBitsSignificatifs.add(binaire.nbBits(tab[i]));
         }
     }
 
@@ -45,42 +48,52 @@ public class TryRebuild {
 
 
     private int cRecursif(int i, int n, int b){
+        String key = i + "." + n + "." + b;
 
-        if(memIteration.get(i + "." + n + "." + b) == null){
+        if(memIteration.get(key) == null){
             cpt ++;//compte le nombre de fois que l'on fait les vrai calculs
+
 
             //condition d'arret
             if(i >= m){
-                memIteration.put(i + "." + n + "." + b,0);
+                memIteration.put(key,0);
             } else {
+                int ai = memBitsSignificatifs.get(i);
                 int cout;
 
                 //si la séquence est remplie ou qu'il n'y en a pas :
                 if(n == 0 || n > 255){
-                    cout = 11 + memBitsSignificatifs.get(i) + cRecursif(i+1, 1, memBitsSignificatifs.get(i));
+                    cout = 11 + ai + cRecursif(i+1, 1, ai);
                 }
                 //si le pixel est parfait pour la séquence :
-                else if(b == memBitsSignificatifs.get(i)){
+                else if(b == ai){
                     cout = b + cRecursif(i+1, n+1, b);
                 }
                 //si le pixel est plus petit :
-                else if(b > memBitsSignificatifs.get(i)){
+                else if(b > ai){
                     int garde = b + cRecursif(i+1, n+1, b);
-                    int ferme = 11 + memBitsSignificatifs.get(i) + cRecursif(i+1, 1, memBitsSignificatifs.get(i));
+                    int ferme = 11 + ai + cRecursif(i+1, 1, ai);
                     cout = Math.min(garde,ferme);
                 }
                 //si le pixel est plus grand :
                 else{
-                    int garde = n*(memBitsSignificatifs.get(i)-b) + memBitsSignificatifs.get(i) + cRecursif(i+1, n+1, memBitsSignificatifs.get(i));
-                    int ferme = 11 + memBitsSignificatifs.get(i) + cRecursif(i+1, 1, memBitsSignificatifs.get(i));
+                    int garde = n*(ai-b) + ai + cRecursif(i+1, n+1, ai);
+                    int ferme = 11 + ai + cRecursif(i+1, 1, ai);
                     cout = Math.min(garde,ferme);
                 }
 
-                memIteration.put(i + "." + n + "." + b,cout);
+
+                memIteration.put(key,cout);
             }
         }
 
-        return memIteration.get(i + "." + n + "." + b);
+        return memIteration.get(key);
+    }
+
+
+
+    private String buildKey(int i, int n, int b){
+        return i + "." + n + "." + b;
     }
 
     public int getM(){

@@ -89,11 +89,11 @@ public class Compression {
 
 
     private int cout_iteratif() {
-    	
+
     	this.memCout.set(this.m, 0);
     	this.memIteration.get(this.m).put(new HeaderSequence(0, 0), 0);
     	
-    	for(int i=this.m-1; i>-1; i--){
+    	for(int i=this.m-1; i>=0; i--){
     		HashMap<HeaderSequence,Integer> precedents = this.memIteration.get(i+1);
     		int a = memSignificatif.get(i);
     		
@@ -125,58 +125,56 @@ public class Compression {
                         this.memIteration.get(i).put(h,newCout); 
 
     			}
-    			else{
-    				if (a<b){
-    					int garde = coutPrec + b;
-    					int ferme = coutPrec + a + 11;
+    			else if(a<b){
+                    int garde = coutPrec + b;
+                    int ferme = coutPrec + a + 11;
 
-    					int newCoutGarde = garde;
-    					int newBGarde = b;
-    					int newNGarde = n + 1;
-    					int newCoutFerme = ferme;
-    					int newBFerme = a;
-    					int newNFerme = 1;
-    					
-    					HeaderSequence hGarde = new HeaderSequence(newNGarde, newBGarde);
-    					HeaderSequence hFerme = new HeaderSequence(newNFerme, newBFerme);
-    					
-    					if (this.memIteration.get(i).containsKey(hGarde))
-                            this.memIteration.get(i).put(hGarde,Math.min(this.memIteration.get(i).get(hGarde), newCoutGarde));
-                        else
-                            this.memIteration.get(i).put(hGarde, newCoutGarde);
+                    int newCoutGarde = garde;
+                    int newBGarde = b;
+                    int newNGarde = n + 1;
+                    int newCoutFerme = ferme;
+                    int newBFerme = a;
+                    int newNFerme = 1;
 
-                        if (this.memIteration.get(i).containsKey(hFerme))
-                        	this.memIteration.get(i).put(hFerme,Math.min(this.memIteration.get(i).get(hFerme), newCoutFerme));
-                        else
-                        	this.memIteration.get(i).put(hFerme, newCoutFerme);
-    				}
-    				else if (a>b){
-    					int garde = coutPrec + a + n*(a-b);
-						int ferme = coutPrec + a + 11;
+                    HeaderSequence hGarde = new HeaderSequence(newNGarde, newBGarde);
+                    HeaderSequence hFerme = new HeaderSequence(newNFerme, newBFerme);
 
-						int newCoutGarde = garde; 
-						int newBGarde = a;
-						int newNGarde = n + 1;
-						int newCoutFerme = ferme;
-						int newBFerme = a;
-						int newNFerme = 1;
-                        
-                        HeaderSequence hGarde = new HeaderSequence(newNGarde, newBGarde);
-    					HeaderSequence hFerme = new HeaderSequence(newNFerme, newBFerme);
-    					
-    					if (this.memIteration.get(i).containsKey(hGarde))
-                            this.memIteration.get(i).put(hGarde,Math.min(this.memIteration.get(i).get(hGarde), newCoutGarde));
-                        else
-                            this.memIteration.get(i).put(hGarde, newCoutGarde);
+                    if (this.memIteration.get(i).containsKey(hGarde))
+                        this.memIteration.get(i).put(hGarde,Math.min(this.memIteration.get(i).get(hGarde), newCoutGarde));
+                    else
+                        this.memIteration.get(i).put(hGarde, newCoutGarde);
 
-                        if (this.memIteration.get(i).containsKey(hFerme))
-                        	this.memIteration.get(i).put(hFerme,Math.min(this.memIteration.get(i).get(hFerme), newCoutFerme));
-                        else
-                        	this.memIteration.get(i).put(hFerme, newCoutFerme);
-    					
-    				}
-    			}
-                         
+                    if (this.memIteration.get(i).containsKey(hFerme))
+                        this.memIteration.get(i).put(hFerme,Math.min(this.memIteration.get(i).get(hFerme), newCoutFerme));
+                    else
+                        this.memIteration.get(i).put(hFerme, newCoutFerme);
+                }
+                else if (a>b){
+                    int garde = coutPrec + a + n*(a-b);
+                    int ferme = coutPrec + a + 11;
+
+                    int newCoutGarde = garde;
+                    int newBGarde = a;
+                    int newNGarde = n + 1;
+                    int newCoutFerme = ferme;
+                    int newBFerme = a;
+                    int newNFerme = 1;
+
+                    HeaderSequence hGarde = new HeaderSequence(newNGarde, newBGarde);
+                    HeaderSequence hFerme = new HeaderSequence(newNFerme, newBFerme);
+
+                    if (this.memIteration.get(i).containsKey(hGarde))
+                        this.memIteration.get(i).put(hGarde,Math.min(this.memIteration.get(i).get(hGarde), newCoutGarde));
+                    else
+                        this.memIteration.get(i).put(hGarde, newCoutGarde);
+
+                    if (this.memIteration.get(i).containsKey(hFerme))
+                        this.memIteration.get(i).put(hFerme,Math.min(this.memIteration.get(i).get(hFerme), newCoutFerme));
+                    else
+                        this.memIteration.get(i).put(hFerme, newCoutFerme);
+
+                }
+
     		}
     		this.setMinimumPixel(i);
     	}
@@ -188,12 +186,12 @@ public class Compression {
 		Integer minvalue = Integer.MAX_VALUE;
 		
 		for (Integer value : this.memIteration.get(i).values()){
-			if (minvalue > value){
+			if (minvalue > value ){
 				minvalue = value;
 			}
 		}
 		
-		this.memCout.set(i, minvalue.intValue());
+		this.memCout.set(i, minvalue);
 	}
 
 	public int getM(){
