@@ -5,8 +5,6 @@ from binaire import GestionBinaire
 class Compression:
     
     def __init__(self, fichier):        
-#        sys.setrecursionlimit(260000)
-        
         self.filePath = fichier        
         
         # helper binaire
@@ -146,44 +144,43 @@ class Compression:
         
             print i, " " ,self.memIteration[i]
             
-    #    def __cout(self, i, n, b):
-#        self.compteur = self.compteur + 1
-#        print(self.compteur)
-#        # On a deja parcouru cette arbre
-#        if (n,b) in self.memIteration[i] :
-#            return self.memIteration[i][n,b]
-#        
-#        # Condition d'arret
-#        if (self.m**2) == i :
-#            self.memIteration[i][n,b] = 0
-#        else :
-#            aj = self.binaire.nbBits(self.tab[i])
-#
-#            if n == 0 or n >= 255 :
-#                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
-#
-#            # Si le pixel est parfait pour la sequence :
-#            elif b == aj:
-#                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
-#
-#            # Si le pixel est plus petit : 
-#            elif b > aj:
-#
-#                garde = self.__cout(i+1, n+1, b) + b
-#                ferme = self.__cout(i+1, 1, aj) + aj + 11
-#                self.memIteration[i][n,b] = min(garde, ferme)
-#
-#            # Si le pixel est plus grand :
-#            else :
-#
-#                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
-#                ferme = self.__cout(i+1, 1, aj) + aj + 11
-#                self.memIteration[i][n,b] = min(garde, ferme)
-#
-#        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
-#            self.memCout[i] = self.memIteration[i][n,b]
-#            
-#        return self.memIteration[i][n,b]
+    def __cout_recursif(self, i, n, b):
+
+        # On a deja parcouru cette arbre
+        if (n,b) in self.memIteration[i] :
+            return self.memIteration[i][n,b]
+
+        # Condition d'arret
+        if (self.m**2) == i :
+            self.memIteration[i][n,b] = 0
+        else :
+            aj = self.binaire.nbBits(self.tab[i])
+
+            if n == 0 or n >= 255 :
+                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
+
+            # Si le pixel est parfait pour la sequence :
+            elif b == aj:
+                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
+
+            # Si le pixel est plus petit : 
+            elif b > aj:
+
+                garde = self.__cout(i+1, n+1, b) + b
+                ferme = self.__cout(i+1, 1, aj) + aj + 11
+                self.memIteration[i][n,b] = min(garde, ferme)
+
+            # Si le pixel est plus grand :
+            else :
+
+                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
+                ferme = self.__cout(i+1, 1, aj) + aj + 11
+                self.memIteration[i][n,b] = min(garde, ferme)
+
+        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
+            self.memCout[i] = self.memIteration[i][n,b]
+
+        return self.memIteration[i][n,b]
             
             
     def uncompresse(self):
@@ -278,12 +275,7 @@ class Compression:
 		print "creation du fichier decompresse"
 		self.binaire.createUnCompressFile(self.filePath ,result)
 		print "votre fichier est disponible"
-            
-            
-		
-            
-            
-            
+        
     def shouldWeCompressTheFile(self):
         listCutFile = self.filePath.split('.')
         length = len(listCutFile)
@@ -291,10 +283,8 @@ class Compression:
             return False
         else:
             return True
-            
         
-        
-filePath = 'images/images/Lena.raw'
+filePath = 'Python/images/images/Lena.raw'
 filePath = sys.argv[1]
 print filePath
 compression = Compression(filePath)
