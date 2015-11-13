@@ -72,9 +72,24 @@ class GestionBinaire:
         header = header + b
         header = header << 5
         return header
-    
-gb = GestionBinaire()
-gb.readFile('images/images/Baboon.raw')
-tab = gb.getPixels()
-#gb.addNumberToBinary(tab[0], 1)
-#gb.createHeaderSequence(1,3)
+		
+	def readFileToUncompress(self, fileName):
+        tab = []
+        
+        with open(fileName,'rb') as image:
+            octet = image.read(1)
+            while octet :
+                tab.append(octet)
+                octet = image.read(1)
+        
+        self.tab = tab
+		
+	def createUncompressFile(self, fileName,tab):
+		dst = open(fileName[0:-3]+"Uncompressed.raw", "wb")        
+        
+		for i in range (0,len(tab)):
+			byte = struct.pack('<B',tab[i])
+			dst.write(byte)
+			
+			
+		

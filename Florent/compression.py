@@ -33,8 +33,8 @@ class Compression:
     
     def c(self):
         print("Algorithme iteratif :")
-        cout = self.__cout_iteratif()
         print "fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits"
+		cout = self.__cout_iteratif()
         print "fichier apres compression : ",cout/8, " octets soit ", cout, " bits"
         print "Compression de ", (1-(cout/((self.m**2)*8)))*100, " %" 
         self.solution()
@@ -150,9 +150,48 @@ class Compression:
             
             
     def uncompresse(self):
-        print "decompression"
-            
-            
+	    print "decompression initialisée"
+		self.tab = self.binaire.readFileToUncompress(self.filePath)
+		
+		i=0
+		#parcour de tous les byte du fichier à décompresser
+		while i < len(tab):
+			#récupération des variables dans l'en tête du segment
+			octet = tab[i];
+			n = struct.unpack('<B',octet)
+			i+=1
+			octet = tab[i] 
+			b = struct.unpack('<B',octet>>5)
+			nbBitRestant = 5
+			
+			while n > 0:
+				#traitement des octets de la séquence
+				
+				#garde que les bits non traités de l'octet
+				octet = tab[i] and ((2^nbBitRestant)-1)
+				if nbBitRestant == b:
+					octetUnCompress = octet
+					nbBitRestant = 8
+				elif nbBitRestant > b:
+					octetUnCompress = octet >> nbBitRestant-b
+					nbBitRestant = nbBitRestant-b
+				else:
+					i+=1
+					nbBitEnPlus = b - nbBitRestant
+					
+					octet1 = octet<<nbBitEnPlus
+					octet2 = tab[i]>>(8-nbBitEnPlus)
+					octetUnCompress = octet1 or octet2
+					nbBitRestant = 8-nbBitEnPlus
+			
+				result.append(struct.unpack('<B',octetUnCompress))
+				n -=1
+				i +=1
+			
+		print "decompression terminée"
+		print "création du fichier décompressé"
+		self.binaire.createUncompressFile(self.filePath,result)
+		print "votre fichier est disponible"
             
             
             
@@ -169,10 +208,8 @@ class Compression:
             
         
         
-print "print"
 filePath = 'images/images/Lena.raw'
 compression = Compression(filePath)
-print "test"
 if(compression.shouldWeCompressTheFile()):
     compression.c()
 else:
