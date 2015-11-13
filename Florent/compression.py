@@ -7,6 +7,8 @@ class Compression:
     def __init__(self, fichier):        
 #        sys.setrecursionlimit(260000)
         
+        self.filePath = fichier        
+        
         # helper binaire
         self.binaire = GestionBinaire()
         self.binaire.readFile(fichier)
@@ -143,6 +145,39 @@ class Compression:
                     bPrec = keys[1]
         
             print i, " " ,self.memIteration[i]
+            
+            
+            
+            
+    def uncompresse(self):
+        print "decompression"
+            
+            
+            
+            
+            
+            
+            
+            
+    def shouldWeCompressTheFile(self):
+        listCutFile = self.filePath.split('.')
+        length = len(listCutFile)
+        if listCutFile[length-1] == 'seg':
+            return False
+        else:
+            return True
+            
         
-compression = Compression('images/images/Lena.raw')
-compression.c()
+        
+print "print"
+filePath = 'images/images/Lena.raw'
+compression = Compression(filePath)
+print "test"
+if(compression.shouldWeCompressTheFile()):
+    compression.c()
+else:
+    compression.uncompresse()    
+    
+    
+    
+    
