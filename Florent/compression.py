@@ -194,17 +194,62 @@ class Compression:
 		
 		i=0
 		#parcours de tous les bytes du fichier a decompresser
-		while i < len(tab):
-			#recuperation des variables dans l'entete du segment
-			#n = struct.unpack('<B',octet)
-			n = tab[i]
-			i+=1
-			b = tab[i] >> 5
-			nbBitRestant = 5
-			
-			while n > 0:
-				#traitement des octets de la sequence
+
+		#recuperation des variables dans l'entete du segment
+		#n = struct.unpack('<B',octet)
+		n = tab[i]
+		i+=1
+		b = tab[i] >> 5
+		nbBitRestant = 5
+		
+		while i < len(tab) and n > 0:
+			if n == 0:
+				#recuperation des variables dans l'entete du segment
+				n = tab[i]
+				i+=1
+				b = tab[i] >> 5
+				nbBitRestant = 5
 				
+				if nbBitRestant == 8:
+					n = tab[i]
+					nbBitRestant = 8
+				else:
+					octet = tab[i]
+					i+=1
+					if(i >= len(tab)):
+						break
+					nbBitEnPlus = 8 - nbBitRestant
+					
+					octet1 = octet << nbBitEnPlus
+					octet2 = tab[i] >> (8-nbBitEnPlus)
+					n = octet1 or octet2
+					nbBitRestant = 8-nbBitEnPlus
+
+				#Recupere le b
+				if(i >= len(tab)):
+					break
+				if nbBitRestant == 3:
+					b = tab[i]
+					nbBitRestant = 8
+				elif nbBitRestant > 3:
+					octetUnCompress = tab[i] >> nbBitRestant-3
+					nbBitRestant = nbBitRestant-3
+				else:
+					octet = tab[i]
+					i+=1
+					if(i >= len(tab)):
+						break
+					nbBitEnPlus = 3 - nbBitRestant
+					
+					octet1 = octet << nbBitEnPlus
+					octet2 = tab[i] >> (8-nbBitEnPlus)
+					b = octet1 or octet2
+					nbBitRestant = 8-nbBitEnPlus
+
+			
+			else:
+				#traitement des octets de la sequence
+			
 				#garde que les bits non traites de l'octet
 				octet = tab[i] and ((2^nbBitRestant)-1)
 				if nbBitRestant == b:
@@ -215,6 +260,9 @@ class Compression:
 					nbBitRestant = nbBitRestant-b
 				else:
 					i+=1
+					if(i >= len(tab)):
+						break
+					
 					nbBitEnPlus = b - nbBitRestant
 					
 					octet1 = octet << nbBitEnPlus
@@ -224,15 +272,15 @@ class Compression:
 			
 				result.append(octetUnCompress)
 				n -=1
-				i +=1
+			i +=1
 			
 		print "decompression terminee"
 		print "creation du fichier decompresse"
-		self.binaire.createUncompressFile(self.filePath,result)
+		self.binaire.createUnCompressFile(self.filePath ,result)
 		print "votre fichier est disponible"
             
             
-            
+		
             
             
             
