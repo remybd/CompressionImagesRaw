@@ -67,6 +67,7 @@ class GestionBinaire:
     
     #return b on 8 bits (ex : b = 3, return 01100000) 
     def createBHeader(self, b) :
+        header = 0
         header = header << 3
         header = header + b
         header = header << 5
