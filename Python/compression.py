@@ -130,7 +130,7 @@ class Compression:
                     if (self.memCout[i-1] != coutPrec + 11 + bPrec):
                         del self.memIteration[i][keys]
                 # si le n ne correspond pas, on supprime les mauvaises valeurs
-                elif n != nPrec-1 or b != bPrec :
+                elif n != nPrec-1 or b > bPrec :
                     del self.memIteration[i][keys]
             
             #Iteration sur les combinaisons qui correspondent au n de la meilleur solution
