@@ -5,8 +5,6 @@ from binaire import GestionBinaire
 class Compression:
     
     def __init__(self, fichier):        
-#        sys.setrecursionlimit(260000)
-        
         self.filePath = fichier        
         
         # helper binaire
@@ -239,7 +237,7 @@ class Compression:
         else:
             return True
         
-filePath = 'images/images/Lena.raw'
+filePath = 'Python/images/images/Lena.raw'
 filePath = sys.argv[1]
 print filePath
 compression = Compression(filePath)
