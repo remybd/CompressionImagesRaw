@@ -30,11 +30,10 @@ class Compression:
             self.memIteration.append({})
     
     def c(self):
-        print("Algorithme iteratif :")
-        print ("fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits")
+        print "Algorithme iteratif :"
+        print "fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits"
         cout = self.__cout_iteratif()
-        print ("fichier apres compression : ",cout/8, " octets soit ", cout, " bits")
-        print ("Compression de ", (1-(cout/((self.m**2)*8)))*100, " %" )
+        print "fichier apres compression : ",cout/8, " octets soit ", cout, " bits"
         self.solution()
     
     def __cout_iteratif(self):
@@ -49,7 +48,7 @@ class Compression:
             precedents = self.memIteration[i+1]
             a = self.binaire.nbBits(self.tab[i])
             
-            # Iteration sur les combinaison (i,n,b) de la case precedemment calculee
+            # Iteration sur les combinaisons (i,n,b) de la case precedemment calculee
             for keys, coutPrec in precedents.items() :
                 n = keys[0]
                 b = keys[1]
@@ -141,9 +140,7 @@ class Compression:
                 else:
                     nPrec = keys[0]
                     bPrec = keys[1]
-        
-            print i, " " ,self.memIteration[i]
-            
+                    
     def __cout_recursif(self, i, n, b):
 
         # On a deja parcouru cette arbre
