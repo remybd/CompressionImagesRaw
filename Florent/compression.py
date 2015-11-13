@@ -33,10 +33,10 @@ class Compression:
     
     def c(self):
         print("Algorithme iteratif :")
-        print "fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits"
-		cout = self.__cout_iteratif()
-        print "fichier apres compression : ",cout/8, " octets soit ", cout, " bits"
-        print "Compression de ", (1-(cout/((self.m**2)*8)))*100, " %" 
+        print ("fichier de depart : ",(self.m**2), " octets soit ", (self.m**2)*8, " bits")
+        cout = self.__cout_iteratif()
+        print ("fichier apres compression : ",cout/8, " octets soit ", cout, " bits")
+        print ("Compression de ", (1-(cout/((self.m**2)*8)))*100, " %" )
         self.solution()
     
     def __cout_iteratif(self):
@@ -146,28 +146,66 @@ class Compression:
         
             print i, " " ,self.memIteration[i]
             
-            
+    #    def __cout(self, i, n, b):
+#        self.compteur = self.compteur + 1
+#        print(self.compteur)
+#        # On a deja parcouru cette arbre
+#        if (n,b) in self.memIteration[i] :
+#            return self.memIteration[i][n,b]
+#        
+#        # Condition d'arret
+#        if (self.m**2) == i :
+#            self.memIteration[i][n,b] = 0
+#        else :
+#            aj = self.binaire.nbBits(self.tab[i])
+#
+#            if n == 0 or n >= 255 :
+#                self.memIteration[i][n,b] = self.__cout(i+1, 1, aj) + 11 + aj
+#
+#            # Si le pixel est parfait pour la sequence :
+#            elif b == aj:
+#                self.memIteration[i][n,b] = aj + self.__cout(i+1, n+1, aj)
+#
+#            # Si le pixel est plus petit : 
+#            elif b > aj:
+#
+#                garde = self.__cout(i+1, n+1, b) + b
+#                ferme = self.__cout(i+1, 1, aj) + aj + 11
+#                self.memIteration[i][n,b] = min(garde, ferme)
+#
+#            # Si le pixel est plus grand :
+#            else :
+#
+#                garde = self.__cout(i+1, n+1, aj) + aj + (n-1)*(aj-b)
+#                ferme = self.__cout(i+1, 1, aj) + aj + 11
+#                self.memIteration[i][n,b] = min(garde, ferme)
+#
+#        if self.memCout[i] == -1 or self.memIteration[i][n,b] < self.memCout[i] :
+#            self.memCout[i] = self.memIteration[i][n,b]
+#            
+#        return self.memIteration[i][n,b]
             
             
     def uncompresse(self):
-	    print "decompression initialisée"
+		print "decompression initialisee"
 		self.tab = self.binaire.readFileToUncompress(self.filePath)
+		tab = self.tab
+		result = []
 		
 		i=0
-		#parcour de tous les byte du fichier à décompresser
+		#parcours de tous les bytes du fichier a decompresser
 		while i < len(tab):
-			#récupération des variables dans l'en tête du segment
-			octet = tab[i];
-			n = struct.unpack('<B',octet)
+			#recuperation des variables dans l'entete du segment
+			#n = struct.unpack('<B',octet)
+			n = tab[i]
 			i+=1
-			octet = tab[i] 
-			b = struct.unpack('<B',octet>>5)
+			b = tab[i] >> 5
 			nbBitRestant = 5
 			
 			while n > 0:
-				#traitement des octets de la séquence
+				#traitement des octets de la sequence
 				
-				#garde que les bits non traités de l'octet
+				#garde que les bits non traites de l'octet
 				octet = tab[i] and ((2^nbBitRestant)-1)
 				if nbBitRestant == b:
 					octetUnCompress = octet
@@ -179,17 +217,17 @@ class Compression:
 					i+=1
 					nbBitEnPlus = b - nbBitRestant
 					
-					octet1 = octet<<nbBitEnPlus
-					octet2 = tab[i]>>(8-nbBitEnPlus)
+					octet1 = octet << nbBitEnPlus
+					octet2 = tab[i] >> (8-nbBitEnPlus)
 					octetUnCompress = octet1 or octet2
 					nbBitRestant = 8-nbBitEnPlus
 			
-				result.append(struct.unpack('<B',octetUnCompress))
+				result.append(octetUnCompress)
 				n -=1
 				i +=1
 			
-		print "decompression terminée"
-		print "création du fichier décompressé"
+		print "decompression terminee"
+		print "creation du fichier decompresse"
 		self.binaire.createUncompressFile(self.filePath,result)
 		print "votre fichier est disponible"
             
@@ -209,6 +247,8 @@ class Compression:
         
         
 filePath = 'images/images/Lena.raw'
+filePath = sys.argv[1]
+print filePath
 compression = Compression(filePath)
 if(compression.shouldWeCompressTheFile()):
     compression.c()

@@ -73,19 +73,28 @@ class GestionBinaire:
         header = header << 5
         return header
 		
-	def readFileToUncompress(self, fileName):
+    def readFileToUncompress(self, fileName):
         tab = []
         
         with open(fileName,'rb') as image:
             octet = image.read(1)
             while octet :
-                tab.append(octet)
+                tab.append(struct.unpack('<B',octet)[0])
                 octet = image.read(1)
+				
         
         self.tab = tab
+        return tab
 		
 	def createUncompressFile(self, fileName,tab):
 		dst = open(fileName[0:-3]+"Uncompressed.raw", "wb")        
+        
+		for i in range (0,len(tab)):
+			byte = struct.pack('<B',tab[i])
+			dst.write(byte)
+			
+	def createCompressedFile(self, fileName,tab):
+		dst = open(fileName[0:-3]+"Compressed.seg", "wb")        
         
 		for i in range (0,len(tab)):
 			byte = struct.pack('<B',tab[i])
