@@ -284,7 +284,6 @@ class Compression:
         else:
             return True
         
-filePath = 'Python/images/images/Lena.raw'
 filePath = sys.argv[1]
 print filePath
 compression = Compression(filePath)

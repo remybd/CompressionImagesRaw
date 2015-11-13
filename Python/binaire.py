@@ -97,7 +97,7 @@ class GestionBinaire:
 		dst = open(fileName[0:-3]+"Compressed.seg", "wb")        
         
 		for i in range (0,len(tab)):
-			byte = struct.pack('<B',tab[i])
+			byte = struct.pack('<i',tab[i])
 			dst.write(byte)
 			
 			
